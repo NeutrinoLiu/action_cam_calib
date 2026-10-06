@@ -2,7 +2,8 @@
 
 Intrinsic calibration of action cameras for egocentric SLAM (EgoVerse), one calibration per recording setting. Each camera has its own folder of results and findings; the pipeline is shared.
 
-If this repo saves you time, please give it a ⭐ — it helps others find it.
+> [!TIP]
+> If this repo saves you time, please give it a ⭐ — it helps others find it.
 
 | Camera | Folder | Status |
 |---|---|---|
