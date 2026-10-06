@@ -2,6 +2,8 @@
 
 Intrinsic calibration of action cameras for egocentric SLAM (EgoVerse), one calibration per recording setting. Each camera has its own folder of results and findings; the pipeline is shared.
 
+If this repo saves you time, please give it a ⭐ — it helps others find it.
+
 | Camera | Folder | Status |
 |---|---|---|
 | DJI Osmo Action 5 Pro (firmware 10.00.16.13) | [`dji/osmo_action_5_pro/`](dji/osmo_action_5_pro/) | 7 settings calibrated (~88 % of the dataset). Ultra Wide + RockSteady+ cannot be calibrated with fixed intrinsics. |
