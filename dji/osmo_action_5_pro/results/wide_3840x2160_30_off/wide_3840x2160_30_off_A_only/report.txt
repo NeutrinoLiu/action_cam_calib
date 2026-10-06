@@ -1,0 +1,10 @@
+setting: lens mode 1 (wide), 3840x2160 @ 29.97 fps, stabilization off, firmware 10.00.16.13
+board found in 756 sampled frames
+fit RMS 0.413 px on 200 frames; held-out RMS 0.433 px on 50 frames
+fx 1418.09  fy 1423.87  cx 1919.23  cy 1069.00  k1..k4 [0.15641, 0.13057, -0.08018, -0.0034]  lambda-equivalent 0.350
+  [PASS] held-out RMS 0.433 px <= 1.00
+  [PASS] coverage 100% of grid >= 80%
+  [PASS] board reached all four corner regions
+  [PASS] model valid to corners (reach 2300 px vs corner 2209 px)
+  [PASS] frames used 200 >= 30
+RESULT: PASS

@@ -1,0 +1,10 @@
+setting: lens mode 2 (standard), 1920x1080 @ 25.0 fps, stabilization RockSteady, firmware 10.00.16.13
+board found in 902 sampled frames
+fit RMS 0.234 px on 200 frames; held-out RMS 0.246 px on 50 frames
+fx 773.33  fy 776.73  cx 957.60  cy 536.08  k1..k4 [0.35531, 0.00412, 0.25643, -0.10112]  lambda-equivalent 0.008
+  [PASS] held-out RMS 0.246 px <= 0.50
+  [PASS] coverage 100% of grid >= 80%
+  [PASS] board reached all four corner regions
+  [PASS] model valid to corners (reach 2503 px vs corner 1105 px)
+  [PASS] frames used 200 >= 30
+RESULT: PASS

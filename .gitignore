@@ -1,0 +1,8 @@
+*.MP4
+*.mp4
+*.LRF
+.venv/
+__pycache__/
+.DS_Store
+capture_log.json
+!dji/**/capture_log.json

@@ -1,0 +1,51 @@
+{
+ "name": "ultrawide_3840x2160_30_rocksteadyplus_A_only",
+ "lens_mode_code": 3,
+ "lens_mode": "ultra wide",
+ "width": 3840,
+ "height": 2160,
+ "fps": 29.97,
+ "stabilization": "RockSteady+",
+ "firmware": "10.00.16.13",
+ "model": "OPENCV_FISHEYE",
+ "distortion_model": "opencv_fisheye_4",
+ "K": [
+  [
+   1997.1119482511344,
+   0.0,
+   1833.7054189485787
+  ],
+  [
+   0.0,
+   1871.6509962678306,
+   1207.2659869562337
+  ],
+  [
+   0.0,
+   0.0,
+   1.0
+  ]
+ ],
+ "fx": 1997.1119482511344,
+ "fy": 1871.6509962678306,
+ "cx": 1833.7054189485787,
+ "cy": 1207.2659869562337,
+ "distortion_coeffs": [
+  0.3015373193190246,
+  -0.5943076049452581,
+  1.291028623529778,
+  -0.8733776500321959
+ ],
+ "reprojection_error_px": 6.343882583951954,
+ "holdout_reprojection_error_px": 6.0938595055801885,
+ "frames_used": 200,
+ "frames_held_out": 50,
+ "coverage": 1.0,
+ "valid_to_corners": false,
+ "lambda_equivalent": 0.15979361207092152,
+ "square_mm": 20.0,
+ "clips": [
+  "CAL_ultrawide_3840x2160_30_rocksteadyplus_A.MP4"
+ ],
+ "checks_passed": false
+}

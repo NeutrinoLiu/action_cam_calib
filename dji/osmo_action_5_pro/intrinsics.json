@@ -1,0 +1,373 @@
+{
+ "camera": "DJI Osmo Action 5 Pro",
+ "firmware": "10.00.16.13",
+ "model": "OPENCV_FISHEYE",
+ "calibrated": "2026-10-04",
+ "notes": "A+B calibrations that pass every check (README.md, section 2). Ultra Wide + RockSteady+ (lens mode 3) is omitted: it has no fixed intrinsics. wide_1920x1080_60_rocksteady was not recorded; frame rate did not change the intrinsics, so use wide_1920x1080_30_rocksteady. fx/fy = 0.995 everywhere, probably board print anisotropy; see README.md finding 7.",
+ "entries": [
+  {
+   "name": "std_1920x1080_25_rocksteady",
+   "lens_mode_code": 2,
+   "lens_mode": "standard",
+   "width": 1920,
+   "height": 1080,
+   "fps": 25.0,
+   "stabilization": "RockSteady",
+   "firmware": "10.00.16.13",
+   "model": "OPENCV_FISHEYE",
+   "distortion_model": "opencv_fisheye_4",
+   "K": [
+    [
+     773.3340924446424,
+     0.0,
+     957.604028744404
+    ],
+    [
+     0.0,
+     776.7285590183833,
+     536.078751542235
+    ],
+    [
+     0.0,
+     0.0,
+     1.0
+    ]
+   ],
+   "fx": 773.3340924446424,
+   "fy": 776.7285590183833,
+   "cx": 957.604028744404,
+   "cy": 536.078751542235,
+   "distortion_coeffs": [
+    0.35531169206122065,
+    0.004120237064500997,
+    0.2564312404656616,
+    -0.10112299070251062
+   ],
+   "reprojection_error_px": 0.23422749590024192,
+   "holdout_reprojection_error_px": 0.2464484258230251,
+   "frames_used": 200,
+   "frames_held_out": 50,
+   "coverage": 1.0,
+   "valid_to_corners": true,
+   "lambda_equivalent": 0.008257581531180246,
+   "square_mm": 20.0,
+   "clips": [
+    "CAL_std_1920x1080_25_rocksteady_A.MP4",
+    "CAL_std_1920x1080_25_rocksteady_B.MP4"
+   ],
+   "checks_passed": true
+  },
+  {
+   "name": "std_1920x1080_30_horizonsteady",
+   "lens_mode_code": 2,
+   "lens_mode": "standard",
+   "width": 1920,
+   "height": 1080,
+   "fps": 29.97,
+   "stabilization": "HorizonSteady",
+   "firmware": "10.00.16.13",
+   "model": "OPENCV_FISHEYE",
+   "distortion_model": "opencv_fisheye_4",
+   "K": [
+    [
+     993.0707633091674,
+     0.0,
+     958.2081330024404
+    ],
+    [
+     0.0,
+     998.0589445274222,
+     535.1133179377738
+    ],
+    [
+     0.0,
+     0.0,
+     1.0
+    ]
+   ],
+   "fx": 993.0707633091674,
+   "fy": 998.0589445274222,
+   "cx": 958.2081330024404,
+   "cy": 535.1133179377738,
+   "distortion_coeffs": [
+    0.3795736139704706,
+    -0.15401402379101872,
+    0.6244301967659812,
+    -0.38455627403004805
+   ],
+   "reprojection_error_px": 0.2595476605899332,
+   "holdout_reprojection_error_px": 0.26580960890687666,
+   "frames_used": 200,
+   "frames_held_out": 50,
+   "coverage": 1.0,
+   "valid_to_corners": true,
+   "lambda_equivalent": 0.0016851614907985428,
+   "square_mm": 20.0,
+   "clips": [
+    "CAL_std_1920x1080_30_horizonsteady_A.MP4",
+    "CAL_std_1920x1080_30_horizonsteady_B.MP4"
+   ],
+   "checks_passed": true
+  },
+  {
+   "name": "std_1920x1080_30_rocksteady",
+   "lens_mode_code": 2,
+   "lens_mode": "standard",
+   "width": 1920,
+   "height": 1080,
+   "fps": 29.97,
+   "stabilization": "RockSteady",
+   "firmware": "10.00.16.13",
+   "model": "OPENCV_FISHEYE",
+   "distortion_model": "opencv_fisheye_4",
+   "K": [
+    [
+     775.0073907482292,
+     0.0,
+     958.3308376157448
+    ],
+    [
+     0.0,
+     778.4772457310577,
+     537.5992141381424
+    ],
+    [
+     0.0,
+     0.0,
+     1.0
+    ]
+   ],
+   "fx": 775.0073907482292,
+   "fy": 778.4772457310577,
+   "cx": 958.3308376157448,
+   "cy": 537.5992141381424,
+   "distortion_coeffs": [
+    0.35784147484130935,
+    -0.011665109672600623,
+    0.284167093824923,
+    -0.11622032415476617
+   ],
+   "reprojection_error_px": 0.2675952731860497,
+   "holdout_reprojection_error_px": 0.2691584458578254,
+   "frames_used": 200,
+   "frames_held_out": 50,
+   "coverage": 1.0,
+   "valid_to_corners": true,
+   "lambda_equivalent": 0.00841343552216676,
+   "square_mm": 20.0,
+   "clips": [
+    "CAL_std_1920x1080_30_rocksteady_A.MP4",
+    "CAL_std_1920x1080_30_rocksteady_B.MP4"
+   ],
+   "checks_passed": true
+  },
+  {
+   "name": "wide_1920x1080_30_rocksteady",
+   "lens_mode_code": 1,
+   "lens_mode": "wide",
+   "width": 1920,
+   "height": 1080,
+   "fps": 29.97,
+   "stabilization": "RockSteady",
+   "firmware": "10.00.16.13",
+   "model": "OPENCV_FISHEYE",
+   "distortion_model": "opencv_fisheye_4",
+   "K": [
+    [
+     781.6765847076383,
+     0.0,
+     958.5833870325963
+    ],
+    [
+     0.0,
+     785.5789956938357,
+     533.3812325176314
+    ],
+    [
+     0.0,
+     0.0,
+     1.0
+    ]
+   ],
+   "fx": 781.6765847076383,
+   "fy": 785.5789956938357,
+   "cx": 958.5833870325963,
+   "cy": 533.3812325176314,
+   "distortion_coeffs": [
+    0.1865798522733272,
+    0.03143539235437263,
+    0.040339846338536434,
+    -0.053918798773518586
+   ],
+   "reprojection_error_px": 0.28067657296718307,
+   "holdout_reprojection_error_px": 0.2823498170155717,
+   "frames_used": 200,
+   "frames_held_out": 50,
+   "coverage": 1.0,
+   "valid_to_corners": true,
+   "lambda_equivalent": 0.26982326047808736,
+   "square_mm": 20.0,
+   "clips": [
+    "CAL_wide_1920x1080_30_rocksteady_A.MP4",
+    "CAL_wide_1920x1080_30_rocksteady_B.MP4"
+   ],
+   "checks_passed": true
+  },
+  {
+   "name": "wide_3840x2160_30_off",
+   "lens_mode_code": 1,
+   "lens_mode": "wide",
+   "width": 3840,
+   "height": 2160,
+   "fps": 29.97,
+   "stabilization": "off",
+   "firmware": "10.00.16.13",
+   "model": "OPENCV_FISHEYE",
+   "distortion_model": "opencv_fisheye_4",
+   "K": [
+    [
+     1416.1163167677291,
+     0.0,
+     1919.898822833928
+    ],
+    [
+     0.0,
+     1422.199153338764,
+     1070.234032327757
+    ],
+    [
+     0.0,
+     0.0,
+     1.0
+    ]
+   ],
+   "fx": 1416.1163167677291,
+   "fy": 1422.199153338764,
+   "cx": 1919.898822833928,
+   "cy": 1070.234032327757,
+   "distortion_coeffs": [
+    0.158887705216578,
+    0.12392472653158132,
+    -0.07438849856650637,
+    -0.004949420374433229
+   ],
+   "reprojection_error_px": 0.4597710543674906,
+   "holdout_reprojection_error_px": 0.4800386711712216,
+   "frames_used": 200,
+   "frames_held_out": 50,
+   "coverage": 1.0,
+   "valid_to_corners": true,
+   "lambda_equivalent": 0.35116046265171735,
+   "square_mm": 20.0,
+   "clips": [
+    "CAL_wide_3840x2160_30_off_A.MP4",
+    "CAL_wide_3840x2160_30_off_B.MP4"
+   ],
+   "checks_passed": true
+  },
+  {
+   "name": "wide_3840x2160_30_rocksteady",
+   "lens_mode_code": 1,
+   "lens_mode": "wide",
+   "width": 3840,
+   "height": 2160,
+   "fps": 29.97,
+   "stabilization": "RockSteady",
+   "firmware": "10.00.16.13",
+   "model": "OPENCV_FISHEYE",
+   "distortion_model": "opencv_fisheye_4",
+   "K": [
+    [
+     1557.1601301003504,
+     0.0,
+     1921.3769626844164
+    ],
+    [
+     0.0,
+     1564.1388379975992,
+     1072.1070640376395
+    ],
+    [
+     0.0,
+     0.0,
+     1.0
+    ]
+   ],
+   "fx": 1557.1601301003504,
+   "fy": 1564.1388379975992,
+   "cx": 1921.3769626844164,
+   "cy": 1072.1070640376395,
+   "distortion_coeffs": [
+    0.17120833434876156,
+    0.08377645947705932,
+    -0.027464091661575034,
+    -0.02481098757107682
+   ],
+   "reprojection_error_px": 0.35584792296457485,
+   "holdout_reprojection_error_px": 0.35553428141958554,
+   "frames_used": 200,
+   "frames_held_out": 50,
+   "coverage": 1.0,
+   "valid_to_corners": true,
+   "lambda_equivalent": 0.2761854461538832,
+   "square_mm": 20.0,
+   "clips": [
+    "CAL_wide_3840x2160_30_rocksteady_A.MP4",
+    "CAL_wide_3840x2160_30_rocksteady_B.MP4"
+   ],
+   "checks_passed": true
+  },
+  {
+   "name": "wide_3840x2880_25_rocksteady",
+   "lens_mode_code": 1,
+   "lens_mode": "wide",
+   "width": 3840,
+   "height": 2880,
+   "fps": 25.0,
+   "stabilization": "RockSteady",
+   "firmware": "10.00.16.13",
+   "model": "OPENCV_FISHEYE",
+   "distortion_model": "opencv_fisheye_4",
+   "K": [
+    [
+     1565.8238869788988,
+     0.0,
+     1918.0078694607087
+    ],
+    [
+     0.0,
+     1573.088100855899,
+     1433.119138909646
+    ],
+    [
+     0.0,
+     0.0,
+     1.0
+    ]
+   ],
+   "fx": 1565.8238869788988,
+   "fy": 1573.088100855899,
+   "cx": 1918.0078694607087,
+   "cy": 1433.119138909646,
+   "distortion_coeffs": [
+    0.1773980667152829,
+    0.06227894255679371,
+    0.000505122560624821,
+    -0.03607750323294296
+   ],
+   "reprojection_error_px": 0.6773020594323855,
+   "holdout_reprojection_error_px": 0.6431993402993382,
+   "frames_used": 200,
+   "frames_held_out": 50,
+   "coverage": 1.0,
+   "valid_to_corners": true,
+   "lambda_equivalent": 0.2715670445857836,
+   "square_mm": 20.0,
+   "clips": [
+    "CAL_wide_3840x2880_25_rocksteady_A.MP4",
+    "CAL_wide_3840x2880_25_rocksteady_B.MP4"
+   ],
+   "checks_passed": true
+  }
+ ]
+}

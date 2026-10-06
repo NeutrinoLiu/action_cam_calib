@@ -1,0 +1,534 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>标定录制记录</title>
+<style>
+:root {
+  --bg: #f5f4f0; --panel: #fff; --ink: #1d1d1f; --muted: #6c6c72; --line: #e2e0da;
+  --accent: #2f5bd3; --accent-bg: #e8eefc; --ok: #1d7f47; --ok-bg: #e3f3e9;
+  --bad: #c0362c; --bad-bg: #fbe8e6; --warn: #9a6200; --warn-bg: #fdf1dc; --chip: #efede7;
+  --mono: ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #151517; --panel: #1f1f22; --ink: #ececee; --muted: #9b9ba2; --line: #333337;
+    --accent: #84a3ff; --accent-bg: #222b45; --ok: #5cc985; --ok-bg: #1b3325;
+    --bad: #ff8075; --bad-bg: #3b201d; --warn: #f0b552; --warn-bg: #3a2c12; --chip: #2a2a2e;
+  }
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink);
+  font: 15px/1.5 -apple-system, BlinkMacSystemFont, "PingFang SC", "Helvetica Neue", sans-serif; }
+button, input, textarea, select { font: inherit; color: inherit; }
+button { cursor: pointer; border: 1px solid var(--line); background: var(--panel); border-radius: 8px; padding: 6px 12px; }
+button:hover { border-color: var(--muted); }
+button.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+button.ok { background: var(--ok); border-color: var(--ok); color: #fff; }
+button.bad { background: var(--panel); border-color: var(--bad); color: var(--bad); }
+button.small { padding: 2px 8px; font-size: 13px; }
+input[type=text], textarea { border: 1px solid var(--line); background: var(--bg); border-radius: 8px; padding: 6px 10px; }
+textarea { width: 100%; font-family: var(--mono); font-size: 12px; }
+code, pre { font-family: var(--mono); font-size: 12.5px; }
+pre { background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; overflow-x: auto; margin: 8px 0; white-space: pre; }
+
+header { position: sticky; top: 0; z-index: 2; background: var(--panel); border-bottom: 1px solid var(--line);
+  display: flex; flex-wrap: wrap; align-items: center; gap: 12px; padding: 10px 16px; }
+header h1 { font-size: 17px; margin: 0 8px 0 0; }
+.tabs { display: flex; gap: 4px; background: var(--chip); padding: 3px; border-radius: 10px; }
+.tabs button { border: 0; background: transparent; padding: 5px 14px; }
+.tabs button.on { background: var(--panel); box-shadow: 0 1px 2px rgba(0,0,0,.12); font-weight: 600; }
+.summary { color: var(--muted); font-size: 13px; }
+.spacer { flex: 1; }
+
+.wrap { max-width: 1180px; margin: 0 auto; padding: 16px; }
+.capture { display: grid; grid-template-columns: 300px 1fr; gap: 16px; align-items: start; }
+@media (max-width: 800px) { .capture { grid-template-columns: 1fr; } }
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; margin-bottom: 12px; }
+.list { position: sticky; top: 70px; padding: 8px; }
+@media (max-width: 800px) { .list { position: static; } }
+.list h3 { font-size: 12px; color: var(--muted); margin: 10px 8px 4px; font-weight: 600; }
+.item { display: flex; align-items: center; gap: 8px; width: 100%; text-align: left; border: 0; border-radius: 8px; padding: 6px 8px; background: transparent; }
+.item.on { background: var(--accent-bg); }
+.item .nm { flex: 1; font-family: var(--mono); font-size: 12px; word-break: break-all; }
+.dots { display: flex; gap: 3px; }
+.dot { width: 9px; height: 9px; border-radius: 50%; background: var(--line); }
+.dot.ok { background: var(--ok); } .dot.bad { background: var(--bad); }
+.dot.skip { background: transparent; box-shadow: inset 0 0 0 1.5px var(--muted); }
+
+h2 { font-size: 18px; margin: 0; font-family: var(--mono); word-break: break-all; }
+.meta { color: var(--muted); font-size: 13px; margin-top: 2px; }
+.menu { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 12px; }
+@media (max-width: 560px) { .menu { grid-template-columns: repeat(2, 1fr); } }
+.menu div { background: var(--chip); border-radius: 10px; padding: 8px 10px; }
+.menu small { display: block; color: var(--muted); font-size: 12px; }
+.menu b { font-size: 17px; }
+
+.step-head { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.step-head h4 { margin: 0; font-size: 16px; }
+.step-head .dur { color: var(--muted); font-size: 13px; }
+.hint { color: var(--muted); font-size: 13px; margin: 4px 0 8px; }
+.badge { display: inline-block; font-size: 12px; padding: 1px 8px; border-radius: 999px; background: var(--chip); color: var(--muted); }
+.badge.ok { background: var(--ok-bg); color: var(--ok); } .badge.bad { background: var(--bad-bg); color: var(--bad); }
+.badge.warn { background: var(--warn-bg); color: var(--warn); }
+.attempt { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 6px 0; border-top: 1px dashed var(--line); font-size: 14px; }
+.attempt .fn { font-family: var(--mono); font-weight: 600; min-width: 44px; }
+.attempt .time { color: var(--muted); font-size: 12px; }
+.attempt .why { color: var(--bad); font-size: 13px; }
+.attempt .note { color: var(--muted); font-size: 13px; }
+.attempt.used .fn::after { content: " ←交付"; color: var(--ok); font-weight: 400; font-size: 12px; }
+.row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 8px; }
+.row input.fnum { width: 90px; font-family: var(--mono); }
+.editor { background: var(--bg); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; margin-top: 8px; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { border-radius: 999px; padding: 3px 10px; font-size: 13px; background: var(--panel); }
+.chip.on { background: var(--bad-bg); border-color: var(--bad); color: var(--bad); }
+.seg button.on.ok { background: var(--ok); color: #fff; border-color: var(--ok); }
+.seg button.on.bad { background: var(--bad); color: #fff; border-color: var(--bad); }
+
+table { border-collapse: collapse; width: 100%; font-size: 13.5px; }
+th, td { text-align: left; padding: 5px 8px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { color: var(--muted); font-weight: 600; font-size: 12px; }
+td.mono { font-family: var(--mono); font-size: 12.5px; word-break: break-all; }
+.scroll { overflow-x: auto; }
+.checks { list-style: none; padding: 0; margin: 6px 0; }
+.checks li { padding: 3px 0; font-size: 14px; }
+.runs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+@media (max-width: 900px) { .runs { grid-template-columns: 1fr; } }
+.run { border: 1px solid var(--line); border-radius: 10px; padding: 8px 10px; }
+.run h5 { margin: 0 0 6px; font-size: 13px; font-family: var(--mono); }
+.run dl { display: grid; grid-template-columns: auto 1fr; gap: 1px 10px; margin: 6px 0; font-size: 13px; }
+.run dt { color: var(--muted); } .run dd { margin: 0; font-family: var(--mono); }
+.err { color: var(--bad); font-size: 13px; }
+.muted { color: var(--muted); }
+details summary { cursor: pointer; color: var(--muted); }
+.next { border-color: var(--warn); background: var(--warn-bg); }
+.next.done { border-color: var(--ok); background: var(--ok-bg); }
+.next ul { margin: 6px 0 0; padding-left: 20px; }
+.next li { margin: 2px 0; }
+label.chk { display: inline-flex; align-items: center; gap: 6px; margin-right: 16px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>标定录制记录</h1>
+  <div class="tabs" id="tabs"></div>
+  <span class="summary" id="summary"></span>
+  <span class="spacer"></span>
+  <span class="summary" id="saveState">载入中…</span>
+</header>
+<div class="wrap" id="app"></div>
+
+<script>
+const KEY = 'osmo-calib-log-v1';
+const SETTINGS = [
+  { p: 1, name: 'wide_3840x2160_30_rocksteady', fov: 'Wide', lens: 1, res: '4K 16:9', w: 3840, h: 2160, fps: 29.97, stab: 'RockSteady', stabCode: 1, share: '34%' },
+  { p: 1, name: 'std_1920x1080_30_rocksteady', fov: 'Standard', lens: 2, res: '1080p 16:9', w: 1920, h: 1080, fps: 29.97, stab: 'RockSteady', stabCode: 1, share: '30%' },
+  { p: 1, name: 'std_1920x1080_25_rocksteady', fov: 'Standard', lens: 2, res: '1080p 16:9', w: 1920, h: 1080, fps: 25, stab: 'RockSteady', stabCode: 1, share: '15%' },
+  { p: 1, name: 'wide_3840x2160_30_off', fov: 'Wide', lens: 1, res: '4K 16:9', w: 3840, h: 2160, fps: 29.97, stab: 'Off', stabCode: 0, share: '参考' },
+  { p: 2, name: 'ultrawide_1920x1080_30_rocksteadyplus', fov: 'Ultra Wide', lens: 3, res: '1080p 16:9', w: 1920, h: 1080, fps: 29.97, stab: 'RockSteady+', stabCode: 4, share: '4%' },
+  { p: 2, name: 'wide_1920x1080_30_rocksteady', fov: 'Wide', lens: 1, res: '1080p 16:9', w: 1920, h: 1080, fps: 29.97, stab: 'RockSteady', stabCode: 1, share: '4%' },
+  { p: 2, name: 'std_1920x1080_30_horizonsteady', fov: 'Standard', lens: 2, res: '1080p 16:9', w: 1920, h: 1080, fps: 29.97, stab: 'HorizonSteady', stabCode: 2, share: '3%' },
+  { p: 3, name: 'wide_3840x2880_25_rocksteady', fov: 'Wide', lens: 1, res: '4K 4:3', w: 3840, h: 2880, fps: 25, stab: 'RockSteady', stabCode: 1, share: '2%' },
+  { p: 3, name: 'wide_1920x1080_60_rocksteady', fov: 'Wide', lens: 1, res: '1080p 16:9', w: 1920, h: 1080, fps: 59.94, stab: 'RockSteady', stabCode: 1, share: '2%', sameAs: 'wide_1920x1080_30_rocksteady' },
+  { p: 3, name: 'ultrawide_3840x2160_30_rocksteadyplus', fov: 'Ultra Wide', lens: 3, res: '4K 16:9', w: 3840, h: 2160, fps: 29.97, stab: 'RockSteady+', stabCode: 4, share: '1%' },
+];
+const STEPS = [
+  { id: 'check', title: '检查片段', dur: '约 3 秒，可跳过', optional: true, hint: '录 3 秒，跑 read_settings.py：镜头模式代码、分辨率、帧率、防抖都对上了再继续。',
+    tips: ['按上面四项在相机菜单里设好', '录 3 秒', '运行 python tools/read_settings.py &lt;这个文件&gt;，四项都对上再录 A；对不上就记失败，改设置重录'] },
+  { id: 'A', title: '标定片段 A', dur: '60–90 秒', hint: '三脚架固定，只动板子。覆盖整个画面，尤其四角和边缘；每个位置停住两拍（换个角度）；距离 0.4–1.2 m；边角处板面朝向镜头。',
+    tips: ['相机在三脚架上，录制中不碰相机（可用蓝牙遥控开始/停止）', '先走四个角，再走四条边，最后中间：四角最重要', '每个位置两拍：停 1 秒，原地换个角度再停 1 秒，然后慢慢移到下一个（移动中的模糊帧会被丢掉）', '中间区域：板子平行于相机正面停一拍，再左右或上下倾斜 30–45° 停一拍', '边缘和四角：板面<b>朝向镜头</b>停一拍，再偏转约 20° 停一拍；<b>不要往背离镜头的方向转</b>（会压扁到识别不出）', '倾斜方向在各位置之间轮换：左转、右转、上仰、下俯', '远近都要：板子占画面宽 20%–60%（约 0.4–1.2 m）', '看相机前屏：格子要看得清，没被压成细线', '板子部分出画没关系', '光线亮且均匀，板子不反光'] },
+  { id: 'B', title: '标定片段 B', dur: '60–90 秒', hint: '紧接着 A 录，要求一样，独立再走一遍，换个顺序。',
+    tips: ['和 A 要求一样：四角、四边、中间，远近；每个位置两拍，边角朝向镜头', '换个顺序走，不要照搬 A', '不改设置、不动相机'] },
+  { id: 'motion', title: '运动片段 MOTION', dur: '约 30 秒', hint: '手持或头戴，像录数据时一样自然移动，板子保持在画面里。',
+    tips: ['把相机从三脚架上取下，手持或头戴', '像录数据时一样自然移动约 30 秒', '板子一直在画面里', '这段不需要标定，录完即可'] },
+];
+const REASONS = ['设置不对', '相机被碰/移动', '没覆盖四角/边缘', '太快/模糊', '反光/光线差', '时长不够', '板子没识别', '其他'];
+const LAMBDA = { 1: [0.19, 0.29], 2: [-0.03, 0.0], 3: [0.08, 0.135] };
+const DJI_WIDE_F_1920 = 728.54;   // DJI's own lens profile, Wide + stabilization off, firmware 10.00.16.13
+const DEST = { A: n => `CAL_${n}_A.MP4`, B: n => `CAL_${n}_B.MP4`, motion: n => `MOTION_${n}.MP4` };
+const RUNS = [['AB', '', 'A+B'], ['A', '_A_only', 'A_only'], ['B', '_B_only', 'B_only']];
+
+const blank = () => ({ attempts: [], post: {}, skipCheck: {}, card: '/Volumes/Untitled/DCIM/DJI_001', out: 'delivery', squareMm: '' });
+// Records live in a JSON file written by tools/capture_log.py; only the open tab/setting is kept in the browser.
+let db = blank(), rev = 0, offline = false, saving = Promise.resolve();
+let ui = { tab: 'capture', sel: SETTINGS[0].name, edit: null, drafts: {}, pasteErr: {} };
+try { Object.assign(ui, JSON.parse(localStorage.getItem(KEY + '-ui') || '{}'), { edit: null, drafts: {}, pasteErr: {} }); } catch (e) {}
+
+function setSaveState(text, bad) {
+  const el = document.getElementById('saveState');
+  el.textContent = text;
+  el.style.color = bad ? 'var(--bad)' : '';
+  el.style.fontWeight = bad ? '600' : '';
+}
+async function load() {
+  try {
+    const j = await (await fetch('api/log', { cache: 'no-store' })).json();
+    rev = j.rev; db = Object.assign(blank(), j.data);
+    setSaveState('记录文件：' + j.file);
+  } catch (e) {
+    offline = true;
+    setSaveState('没连上保存服务，记录不会保存。请运行 python tools/capture_log.py 打开本页。', true);
+  }
+}
+function save() {
+  try { localStorage.setItem(KEY + '-ui', JSON.stringify({ tab: ui.tab, sel: ui.sel })); } catch (e) {}
+  if (offline) return;
+  // Saves run one at a time and always send the current records, so a failed save is retried by the next one.
+  saving = saving.then(async () => {
+    try {
+      const r = await fetch('api/log', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ rev, data: db }) });
+      const j = await r.json();
+      if (r.status === 409) {
+        rev = j.rev; db = Object.assign(blank(), j.data); ui.edit = null; render();
+        alert('记录文件已被别的页面改过（是不是开了两个页面？）。刚才的修改没有保存，已重新载入文件里的最新记录。');
+        return;
+      }
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      rev = j.rev;
+      setSaveState(`已保存 ${new Date().toLocaleTimeString()} · ${db.attempts.length} 条记录`);
+    } catch (e) {
+      setSaveState('保存失败（' + e.message + '）。capture_log.py 还在运行吗？', true);
+    }
+  });
+}
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
+const S = name => SETTINGS.find(s => s.name === name);
+const stepsFor = s => STEPS;
+const optional = (s, st) => st.id === 'check' || (st.id === 'motion' && s.p !== 1);   // MOTION is required for priority 1 only
+const attemptsOf = (name, step) => db.attempts.filter(a => a.setting === name && a.step === step);
+const chosen = (name, step) => attemptsOf(name, step).filter(a => a.ok).at(-1);
+const skipped = (name, step) => step === 'check' && !!db.skipCheck[name] && !chosen(name, step);
+const stepState = (name, step) => chosen(name, step) ? 'ok' : skipped(name, step) ? 'skip' : attemptsOf(name, step).length ? 'bad' : '';
+const settingDone = s => stepsFor(s).every(st => optional(s, st) || chosen(s.name, st.id));
+const post = name => (db.post[name] ??= { copied: false, uploaded: false, runs: {} });
+const fmtTime = iso => { const d = new Date(iso); return `${d.getMonth() + 1}/${d.getDate()} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`; };
+const normFile = f => /^\d+$/.test(f.trim()) ? f.trim().padStart(4, '0') : f.trim();
+function nextFile() {
+  const nums = db.attempts.map(a => parseInt(a.file, 10)).filter(n => !isNaN(n));
+  return nums.length ? String(Math.max(...nums) + 1).padStart(4, '0') : '';
+}
+
+/* ---------- header ---------- */
+function renderHeader() {
+  document.getElementById('tabs').innerHTML = [['capture', '采集时'], ['post', '采集后']]
+    .map(([id, t]) => `<button class="${ui.tab === id ? 'on' : ''}" data-tab="${id}">${t}</button>`).join('');
+  const active = SETTINGS.filter(s => !s.sameAs);
+  const done = active.filter(settingDone);
+  const p1 = SETTINGS.filter(s => s.p === 1);
+  const fails = db.attempts.filter(a => !a.ok).length;
+  document.getElementById('summary').textContent =
+    `已完成 ${done.length}/${active.length} 个设置（跳过 ${SETTINGS.length - active.length} 个） · 优先级 1：${p1.filter(settingDone).length}/${p1.length} · 共 ${db.attempts.length} 条记录，失败 ${fails} 条`;
+}
+
+/* ---------- capture tab ---------- */
+function renderCapture() {
+  const s = S(ui.sel);
+  let list = '';
+  for (const p of [1, 2, 3]) {
+    list += `<h3>优先级 ${p}</h3>`;
+    for (const x of SETTINGS.filter(x => x.p === p)) {
+      const dots = x.sameAs ? '<span class="muted" style="font-size:12px">跳过</span>'
+        : stepsFor(x).map(st => `<span class="dot ${stepState(x.name, st.id)}" title="${st.title}"></span>`).join('');
+      list += `<button class="item ${x.name === ui.sel ? 'on' : ''}" data-sel="${x.name}"><span class="nm">${x.name}</span><span class="dots">${dots}</span></button>`;
+    }
+  }
+  const steps = stepsFor(s).map(st => renderStep(s, st)).join('');
+  return `<div class="capture">
+    <div class="card list">${list}
+      <p class="muted" style="font-size:12px;margin:10px 8px 4px">圆点：检查 / A / B / MOTION。绿=有成功记录，红=只有失败。</p></div>
+    <div>
+      <div class="card">
+        <h2>${s.name}</h2>
+        <div class="meta">优先级 ${s.p} · 数据占比 ${s.share}${settingDone(s) ? ' · <span class="badge ok">本设置已录完</span>' : ''}</div>
+        <div class="menu">
+          <div><small>FOV</small><b>${s.fov}</b></div>
+          <div><small>分辨率</small><b>${s.res}</b></div>
+          <div><small>帧率</small><b>${Math.round(s.fps)}fps</b></div>
+          <div><small>防抖</small><b>${s.stab}</b></div>
+        </div>
+        <div class="meta" style="margin-top:8px">read_settings.py 应显示：lens mode code ${s.lens} · ${s.w}x${s.h} @ ${s.fps} · stabilization code ${s.stabCode}</div>
+      </div>
+      ${renderNext(s)}
+      ${steps}
+    </div></div>`;
+}
+
+function renderNext(s) {
+  if (s.sameAs) return `<div class="card next done"><b>跳过：</b>和 <button class="small" data-sel="${s.sameAs}">${s.sameAs}</button> 只差帧率，用它的标定结果。下面的步骤仍可记录，万一要补录。</div>`;
+  const st = stepsFor(s).find(st => !chosen(s.name, st.id) && !skipped(s.name, st.id));
+  if (!st || settingDone(s)) {
+    const nxt = SETTINGS.find(x => !x.sameAs && !settingDone(x));
+    return `<div class="card next done"><b>这个设置录完了。</b>${s.p !== 1 && !chosen(s.name, 'motion') ? '（MOTION 在优先级 2–3 是可选的，录了就在下面记一下。）' : ''}
+      ${nxt ? `下一个：<button class="small" data-sel="${nxt.name}">${nxt.name}</button>` : '全部设置都录完了，去“采集后”。'}</div>`;
+  }
+  const fails = attemptsOf(s.name, st.id).filter(a => !a.ok);
+  const last = fails.at(-1);
+  return `<div class="card next">
+    <div class="step-head"><span class="badge warn">下一步</span><h4>${st.title}</h4><span class="dur">${st.dur}</span></div>
+    ${last ? `<div class="err" style="margin-top:4px">上次失败：${last.reasons.map(esc).join('、')}${last.note ? '：' + esc(last.note) : ''}，这次注意。</div>` : ''}
+    <ul>${st.id === 'A' && skipped(s.name, 'check') ? '<li><b>跳过了检查片段：开录前在相机屏幕上再核对一遍上面四项。</b></li>' : ''}${st.tips.map(t => `<li>${t}</li>`).join('')}</ul>
+    ${st.optional ? '<div class="row"><button class="small" data-skip="1">跳过检查片段</button></div>' : ''}
+  </div>`;
+}
+
+function renderStep(s, st) {
+  const atts = attemptsOf(s.name, st.id);
+  const used = chosen(s.name, st.id);
+  const state = stepState(s.name, st.id);
+  const badge = { ok: '<span class="badge ok">已完成</span>', bad: '<span class="badge bad">还没有成功的</span>', skip: '<span class="badge">已跳过</span>', '': '<span class="badge">未录</span>' }[state];
+  const skipBtn = st.optional && !used ? `<button class="small" data-skip="${state === 'skip' ? '0' : '1'}">${state === 'skip' ? '取消跳过' : '跳过'}</button>` : '';
+  const rows = atts.map((a, i) => ui.edit && ui.edit.id === a.id ? renderEditor(s, st) : `
+    <div class="attempt ${a === used && st.id !== 'check' ? 'used' : ''}">
+      <span class="muted">#${i + 1}</span>
+      <span class="fn">${esc(a.file) || '—'}</span>
+      <span class="badge ${a.ok ? 'ok' : 'bad'}">${a.ok ? '成功' : '失败'}</span>
+      ${!a.ok && a.reasons.length ? `<span class="why">${a.reasons.map(esc).join('、')}</span>` : ''}
+      ${a.note ? `<span class="note">${esc(a.note)}</span>` : ''}
+      <span class="spacer"></span><span class="time">${fmtTime(a.t)}</span>
+      <button class="small" data-edit="${a.id}">编辑</button>
+    </div>`).join('');
+  const isNew = ui.edit && ui.edit.id === null && ui.edit.step === st.id;
+  const draft = ui.drafts[st.id] ?? nextFile();
+  const form = isNew ? renderEditor(s, st) : `
+    <div class="row">
+      <span class="muted">文件号</span>
+      <input type="text" class="fnum" data-draft="${st.id}" value="${esc(draft)}" placeholder="0012">
+      <button class="ok" data-rec="${st.id}" data-ok="1">✓ 记录成功</button>
+      <button class="bad" data-rec="${st.id}" data-ok="0">✗ 记录失败…</button>
+      ${skipBtn}
+    </div>`;
+  return `<div class="card">
+    <div class="step-head"><h4>${st.title}</h4><span class="dur">${st.dur}${st.id === 'motion' && s.p !== 1 ? '，可选' : ''}</span>${badge}</div>
+    <div class="hint">${st.hint}</div>
+    ${rows}${form}
+  </div>`;
+}
+
+function renderEditor(s, st) {
+  const e = ui.edit;
+  const chips = REASONS.map(r => `<button class="chip ${e.reasons.includes(r) ? 'on' : ''}" data-reason="${esc(r)}">${esc(r)}</button>`).join('');
+  return `<div class="editor">
+    <div class="row" style="margin-top:0">
+      <span class="muted">文件号</span>
+      <input type="text" class="fnum" id="edFile" value="${esc(e.file)}" placeholder="0012">
+      <span class="seg"><button class="${e.ok ? 'on ok' : ''}" data-setok="1">成功</button>
+      <button class="${e.ok ? '' : 'on bad'}" data-setok="0">失败</button></span>
+    </div>
+    ${e.ok ? '' : `<div class="row"><span class="muted">原因</span><div class="chips">${chips}</div></div>`}
+    <div class="row"><span class="muted">备注</span><input type="text" id="edNote" style="flex:1;min-width:200px" value="${esc(e.note)}" placeholder="${e.ok ? '可选' : '比如：右下角没拍到'}"></div>
+    <div class="row">
+      <button class="primary" data-save>保存</button>
+      <button data-cancel>取消</button>
+      ${e.id ? '<span class="spacer"></span><button class="bad small" data-del>删除这条</button>' : ''}
+    </div>
+  </div>`;
+}
+
+/* ---------- post tab ---------- */
+function renderPost() {
+  const recorded = SETTINGS.filter(s => db.attempts.some(a => a.setting === s.name));
+  const others = SETTINGS.filter(s => !recorded.includes(s) && !s.sameAs);
+  const covered = SETTINGS.filter(s => !recorded.includes(s) && s.sameAs);
+  const head = `<div class="card">
+    <h4 style="margin:0 0 8px">第 4 步：拷贝并改名</h4>
+    <div class="row" style="margin-top:0">
+      <span class="muted">卡上的文件夹</span><input type="text" id="card" style="flex:1;min-width:240px" value="${esc(db.card)}">
+      <span class="muted">交付文件夹</span><input type="text" id="out" style="width:140px" value="${esc(db.out)}">
+      <span class="muted">方格边长 mm</span><input type="text" id="sq" style="width:90px" value="${esc(db.squareMm)}" placeholder="27.94">
+    </div>
+    <p class="hint">只拷贝每一步最新的成功记录（标着“←交付”的那条）。检查片段和失败的片段不交付。卡上的原文件不会被改动。在 calibration_handover 文件夹里运行：</p>
+    <div class="row" style="margin-top:0"><button class="small" data-copy="cpall">复制命令</button></div>
+    <pre id="cpall">${esc(copyScript(recorded))}</pre>
+  </div>`;
+  const cards = recorded.map(renderPostSetting).join('');
+  const rest = (others.length ? `<p class="muted">还没有记录的设置：${others.map(s => `<code>${s.name}</code>`).join('、')}</p>` : '')
+    + covered.map(s => `<p class="muted">跳过：<code>${s.name}</code>，用 <code>${s.sameAs}</code> 的结果（只差帧率）。</p>`).join('');
+  return head + (cards || '<p class="muted">还没有任何录制记录。先去“采集时”记录。</p>') + rest;
+}
+
+function copyScript(list) {
+  const lines = [`CARD="${db.card}"`, `OUT="${db.out}"`];
+  for (const s of list) {
+    const parts = ['A', 'B', 'motion'].filter(r => stepsFor(s).some(st => st.id === r)).map(r => [r, chosen(s.name, r)]);
+    const have = parts.filter(([, a]) => a);
+    if (!have.length) continue;
+    lines.push('', `mkdir -p "$OUT/${s.name}"`);
+    for (const [r, a] of have) lines.push(`cp -n "$CARD"/DJI_*_${a.file}_D.MP4 "$OUT/${s.name}/${DEST[r](s.name)}"`);
+    for (const [r] of parts.filter(([r, a]) => !a && !optional(s, STEPS.find(st => st.id === r)))) lines.push(`# 缺少 ${DEST[r](s.name)}：还没有成功的 ${r} 记录`);
+  }
+  return lines.join('\n');
+}
+
+function calibCommands(s) {
+  const sq = db.squareMm || '<方格边长mm>';
+  const f = r => `${db.out}/${s.name}/${DEST[r](s.name)}`;
+  const cmd = (suffix, files) => [`python tools/calibrate.py --square-mm ${sq} --name ${s.name}${suffix}`, ...files.map(f)].join(' \\\n    ');
+  return [cmd('', ['A', 'B']), cmd('_A_only', ['A']), cmd('_B_only', ['B'])].join('\n\n');
+}
+
+function renderPostSetting(s) {
+  const pp = post(s.name);
+  const roles = stepsFor(s).map(st => {
+    const atts = attemptsOf(s.name, st.id);
+    const use = chosen(s.name, st.id);
+    const fails = atts.filter(a => !a.ok);
+    const target = DEST[st.id] ? DEST[st.id](s.name) : '不交付';
+    return `<tr><td>${st.title}</td>
+      <td class="mono">${use ? esc(use.file) : skipped(s.name, st.id) ? '<span class="badge">已跳过</span>' : optional(s, st) ? '—' : '<span class="badge bad">缺</span>'}</td>
+      <td class="mono">${target}</td>
+      <td>${fails.length ? fails.map(a => `<span class="mono">${esc(a.file) || '—'}</span> <span class="why err">${a.reasons.map(esc).join('、')}${a.note ? '：' + esc(a.note) : ''}</span>`).join('<br>') : '<span class="muted">—</span>'}</td></tr>`;
+  }).join('');
+  const runs = RUNS.map(([key, suffix, label]) => {
+    const r = pp.runs[key];
+    const err = ui.pasteErr[s.name + key];
+    const body = r ? `
+      <span class="badge ${r.checks_passed ? 'ok' : 'bad'}">${r.checks_passed ? 'PASS' : 'FAIL'}</span>
+      <dl>
+        <dt>fx / fy</dt><dd>${r.fx.toFixed(2)} / ${r.fy.toFixed(2)}</dd>
+        <dt>cx / cy</dt><dd>${r.cx.toFixed(2)} / ${r.cy.toFixed(2)}</dd>
+        <dt>held-out</dt><dd>${r.holdout_reprojection_error_px.toFixed(3)} px</dd>
+        <dt>coverage</dt><dd>${Math.round(r.coverage * 100)}%</dd>
+        <dt>frames</dt><dd>${r.frames_used}</dd>
+        <dt>λ-equiv</dt><dd>${r.lambda_equivalent.toFixed(3)}</dd>
+      </dl>
+      <button class="small" data-clearrun="${key}" data-s="${s.name}">清除</button>`
+      : `<textarea rows="4" data-paste="${key}" data-s="${s.name}" placeholder="粘贴 results/${s.name}${suffix}/intrinsics_entry.json 的内容"></textarea>
+         ${err ? `<div class="err">${esc(err)}</div>` : ''}`;
+    return `<div class="run"><h5>${label}</h5>${body}</div>`;
+  }).join('');
+  return `<div class="card">
+    <div class="step-head"><h2 style="font-size:16px">${s.name}</h2>
+      ${settingDone(s) ? '<span class="badge ok">录完</span>' : '<span class="badge warn">还没录完</span>'}</div>
+    <div class="scroll"><table style="margin-top:8px">
+      <tr><th>步骤</th><th>交付的文件号</th><th>改名为</th><th>失败的记录</th></tr>${roles}</table></div>
+    <h4 style="margin:14px 0 4px">第 5 步：标定</h4>
+    <div class="row" style="margin-top:0"><button class="small" data-copy="cal-${s.name}">复制命令</button></div>
+    <pre id="cal-${s.name}">${esc(calibCommands(s))}</pre>
+    <div class="runs">${runs}</div>
+    <ul class="checks">${checkResults(s).map(([v, t]) => `<li><span class="badge ${v}">${{ ok: '通过', bad: '不通过', warn: '注意', '': '待定' }[v]}</span> ${t}</li>`).join('')}</ul>
+    <div class="row">
+      <label class="chk"><input type="checkbox" data-flag="copied" data-s="${s.name}" ${pp.copied ? 'checked' : ''}> 已拷贝改名</label>
+      <label class="chk"><input type="checkbox" data-flag="uploaded" data-s="${s.name}" ${pp.uploaded ? 'checked' : ''}> 已上传</label>
+    </div>
+  </div>`;
+}
+
+function checkResults(s) {
+  const { AB, A, B } = post(s.name).runs;
+  const out = [];
+  for (const [k, r] of [['A+B', AB], ['A_only', A], ['B_only', B]])
+    out.push(r ? [r.checks_passed ? 'ok' : 'bad', `${k} 的 calibrate.py 检查 ${r.checks_passed ? '全部 PASS' : '有 FAIL，看 report.txt'}`] : ['', `${k} 还没贴结果`]);
+  if (A && B) {
+    const fxd = Math.abs(A.fx - B.fx) / ((A.fx + B.fx) / 2) * 100;
+    const tol = 2 * s.w / 1920;
+    const cd = Math.max(Math.abs(A.cx - B.cx), Math.abs(A.cy - B.cy));
+    out.push([fxd <= 0.3 ? 'ok' : 'bad', `A 和 B 的 fx 相差 ${fxd.toFixed(2)}%（要求 ≤ 0.3%）`]);
+    out.push([cd <= tol ? 'ok' : 'bad', `A 和 B 的 cx/cy 最大相差 ${cd.toFixed(1)} px（要求 ≤ ${tol} px）`]);
+  } else out.push(['', 'A 和 B 一致性：两个都贴上后自动比较']);
+  if (AB) {
+    const [lo, hi] = LAMBDA[s.lens];
+    const l = AB.lambda_equivalent;
+    out.push([l >= lo && l <= hi ? 'ok' : 'warn', `λ-equivalent ${l.toFixed(3)}，数据集测得 ${lo} – ${hi}${l >= lo && l <= hi ? '' : '：差得多通常说明设置不对'}`]);
+    if (s.name === 'wide_3840x2160_30_off') {
+      const ref = DJI_WIDE_F_1920 * s.w / 1920;
+      out.push(['warn', `和 DJI 出厂参数对比：fx ${AB.fx.toFixed(1)} vs DJI f ${ref.toFixed(1)} px（${((AB.fx / ref - 1) * 100).toFixed(2)}%）`]);
+    }
+  }
+  return out;
+}
+
+function parseRun(s, key, suffix, text) {
+  let j;
+  try { j = JSON.parse(text); } catch (e) { return '不是有效的 JSON，请粘贴 intrinsics_entry.json 的完整内容。'; }
+  const want = s.name + suffix;
+  if (j.name !== want) return `name 是 "${j.name}"，这里需要 "${want}"。贴错文件了？`;
+  const stab = x => String(x).toLowerCase().replace('tradeoff', 'rocksteady+');   // older read_settings.py called RockSteady+ "Tradeoff"
+  if (j.lens_mode_code !== s.lens || j.width !== s.w || j.height !== s.h || Math.abs(j.fps - s.fps) > 0.05 || stab(j.stabilization) !== stab(s.stab))
+    return `元数据不符：lens ${j.lens_mode_code} · ${j.width}x${j.height} @ ${j.fps} · ${j.stabilization}，应为 lens ${s.lens} · ${s.w}x${s.h} @ ${s.fps} · ${s.stab}。`;
+  const keep = ['fx', 'fy', 'cx', 'cy', 'lambda_equivalent', 'holdout_reprojection_error_px', 'coverage', 'frames_used', 'checks_passed', 'stabilization', 'firmware', 'distortion_coeffs'];
+  for (const k of keep) if (!(k in j)) return `缺少字段 ${k}。`;
+  post(s.name).runs[key] = Object.fromEntries(keep.map(k => [k, j[k]]));
+  return null;
+}
+
+/* ---------- render + events ---------- */
+function render() {
+  renderHeader();
+  document.getElementById('app').innerHTML = ui.tab === 'capture' ? renderCapture() : renderPost();
+}
+
+document.addEventListener('click', ev => {
+  const t = ev.target.closest('button');
+  if (!t) return;
+  const d = t.dataset;
+  if (d.tab) { ui.tab = d.tab; ui.edit = null; save(); }
+  else if (d.sel) { ui.sel = d.sel; ui.edit = null; ui.drafts = {}; save(); }
+  else if (d.rec) {
+    const file = normFile(ui.drafts[d.rec] ?? nextFile());
+    if (d.ok === '1') {
+      db.attempts.push({ id: crypto.randomUUID(), setting: ui.sel, step: d.rec, file, ok: true, reasons: [], note: '', t: new Date().toISOString() });
+      delete ui.drafts[d.rec]; save();
+    } else ui.edit = { id: null, step: d.rec, file, ok: false, reasons: [], note: '' };
+  }
+  else if (d.edit) { const a = db.attempts.find(a => a.id === d.edit); ui.edit = { id: a.id, step: a.step, file: a.file, ok: a.ok, reasons: [...a.reasons], note: a.note }; }
+  else if (d.setok !== undefined) { syncEditor(); ui.edit.ok = d.setok === '1'; }
+  else if (d.reason) { syncEditor(); const r = ui.edit.reasons; r.includes(d.reason) ? r.splice(r.indexOf(d.reason), 1) : r.push(d.reason); }
+  else if ('save' in d) {
+    syncEditor();
+    const e = ui.edit;
+    if (!e.ok && !e.reasons.length && !e.note.trim()) { alert('失败的记录请至少选一个原因或写个备注。'); return; }
+    const fields = { file: normFile(e.file), ok: e.ok, reasons: e.ok ? [] : e.reasons, note: e.note.trim() };
+    if (e.id) Object.assign(db.attempts.find(a => a.id === e.id), fields);
+    else { db.attempts.push({ id: crypto.randomUUID(), setting: ui.sel, step: e.step, t: new Date().toISOString(), ...fields }); delete ui.drafts[e.step]; }
+    ui.edit = null; save();
+  }
+  else if ('cancel' in d) ui.edit = null;
+  else if ('del' in d) {
+    if (!confirm('删除这条记录？')) return;
+    db.attempts = db.attempts.filter(a => a.id !== ui.edit.id); ui.edit = null; save();
+  }
+  else if (d.skip) { if (d.skip === '1') db.skipCheck[ui.sel] = true; else delete db.skipCheck[ui.sel]; save(); }
+  else if (d.clearrun) { delete post(d.s).runs[d.clearrun]; save(); }
+  else if (d.copy) {
+    const txt = document.getElementById(d.copy).textContent;
+    navigator.clipboard.writeText(txt).then(() => { t.textContent = '已复制'; setTimeout(() => t.textContent = '复制命令', 1200); });
+    return;
+  }
+  else return;
+  render();
+});
+
+function syncEditor() {
+  const f = document.getElementById('edFile'), n = document.getElementById('edNote');
+  if (f) ui.edit.file = f.value;
+  if (n) ui.edit.note = n.value;
+}
+
+document.addEventListener('input', ev => {
+  const t = ev.target;
+  if (t.dataset.draft) ui.drafts[t.dataset.draft] = t.value;
+  else if (['card', 'out', 'sq'].includes(t.id)) {
+    db[{ card: 'card', out: 'out', sq: 'squareMm' }[t.id]] = t.value.trim(); save();
+    document.getElementById('cpall').textContent = copyScript(SETTINGS.filter(s => db.attempts.some(a => a.setting === s.name)));
+    for (const s of SETTINGS) { const el = document.getElementById('cal-' + s.name); if (el) el.textContent = calibCommands(s); }
+  }
+  else if (t.dataset.paste && t.value.trim()) {
+    const s = S(t.dataset.s), [key, suffix] = RUNS.find(r => r[0] === t.dataset.paste);
+    const err = parseRun(s, key, suffix, t.value);
+    ui.pasteErr[s.name + key] = err;
+    if (!err) save();
+    render();
+  }
+});
+
+document.addEventListener('change', ev => {
+  const t = ev.target;
+  if (t.dataset.flag) { post(t.dataset.s)[t.dataset.flag] = t.checked; save(); }
+});
+
+load().then(render);
+</script>
+</body>
+</html>

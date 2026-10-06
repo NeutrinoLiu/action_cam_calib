@@ -1,0 +1,13 @@
+Board file      charuco_A3_12x9.png from the handover kit (12 x 9 squares, DICT_6X6_250, marker = 0.75 x square)
+Printed size    NOT 100 %. Measured square: 20 mm (nominal 28 mm on A3). 20/28 = 0.71, which matches
+                an A3 -> A4 "fit to page" print (0.707).
+--square-mm     20 (used for every calibration)
+Not measured    the 100 mm bar; the square size in the second direction; board material/backing.
+
+Effect on the results
+- A uniformly scaled board does not change the intrinsics (K, distortion); only the board-to-camera
+  distances scale. Checked: the same frames calibrated with 20 mm and with 28 mm give identical
+  fx, fy, cx, cy and k1..k4.
+- Every calibrated setting, including Wide with stabilization off, gives fx/fy = 0.995. Square
+  pixels would give 1.000, so the print is probably ~0.45 % anisotropic (horizontal vs vertical).
+  See README.md, finding 7.

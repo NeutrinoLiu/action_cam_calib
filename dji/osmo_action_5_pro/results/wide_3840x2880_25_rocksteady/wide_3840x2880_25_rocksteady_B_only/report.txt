@@ -1,0 +1,10 @@
+setting: lens mode 1 (wide), 3840x2880 @ 25.0 fps, stabilization RockSteady, firmware 10.00.16.13
+board found in 1416 sampled frames
+fit RMS 0.668 px on 200 frames; held-out RMS 0.645 px on 50 frames
+fx 1566.45  fy 1572.92  cx 1915.27  cy 1435.12  k1..k4 [0.1752, 0.05737, 0.00782, -0.03917]  lambda-equivalent 0.277
+  [PASS] held-out RMS 0.645 px <= 1.00
+  [PASS] coverage 100% of grid >= 80%
+  [PASS] board reached all four corner regions
+  [FAIL] model valid to corners (reach 2405 px vs corner 2407 px)
+  [PASS] frames used 200 >= 30
+RESULT: FAIL: see the failed checks; usually more board views near the frame corners or sharper frames fix it

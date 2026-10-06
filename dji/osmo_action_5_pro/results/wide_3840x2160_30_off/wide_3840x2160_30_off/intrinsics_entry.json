@@ -1,0 +1,52 @@
+{
+ "name": "wide_3840x2160_30_off",
+ "lens_mode_code": 1,
+ "lens_mode": "wide",
+ "width": 3840,
+ "height": 2160,
+ "fps": 29.97,
+ "stabilization": "off",
+ "firmware": "10.00.16.13",
+ "model": "OPENCV_FISHEYE",
+ "distortion_model": "opencv_fisheye_4",
+ "K": [
+  [
+   1416.1163167677291,
+   0.0,
+   1919.898822833928
+  ],
+  [
+   0.0,
+   1422.199153338764,
+   1070.234032327757
+  ],
+  [
+   0.0,
+   0.0,
+   1.0
+  ]
+ ],
+ "fx": 1416.1163167677291,
+ "fy": 1422.199153338764,
+ "cx": 1919.898822833928,
+ "cy": 1070.234032327757,
+ "distortion_coeffs": [
+  0.158887705216578,
+  0.12392472653158132,
+  -0.07438849856650637,
+  -0.004949420374433229
+ ],
+ "reprojection_error_px": 0.4597710543674906,
+ "holdout_reprojection_error_px": 0.4800386711712216,
+ "frames_used": 200,
+ "frames_held_out": 50,
+ "coverage": 1.0,
+ "valid_to_corners": true,
+ "lambda_equivalent": 0.35116046265171735,
+ "square_mm": 20.0,
+ "clips": [
+  "CAL_wide_3840x2160_30_off_A.MP4",
+  "CAL_wide_3840x2160_30_off_B.MP4"
+ ],
+ "checks_passed": true
+}

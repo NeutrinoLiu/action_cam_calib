@@ -1,0 +1,51 @@
+{
+ "name": "std_1920x1080_25_rocksteady_A_only",
+ "lens_mode_code": 2,
+ "lens_mode": "standard",
+ "width": 1920,
+ "height": 1080,
+ "fps": 25.0,
+ "stabilization": "RockSteady",
+ "firmware": "10.00.16.13",
+ "model": "OPENCV_FISHEYE",
+ "distortion_model": "opencv_fisheye_4",
+ "K": [
+  [
+   776.368373317144,
+   0.0,
+   958.5500577011894
+  ],
+  [
+   0.0,
+   779.5271177589871,
+   537.552664669334
+  ],
+  [
+   0.0,
+   0.0,
+   1.0
+  ]
+ ],
+ "fx": 776.368373317144,
+ "fy": 779.5271177589871,
+ "cx": 958.5500577011894,
+ "cy": 537.552664669334,
+ "distortion_coeffs": [
+  0.3557034395007962,
+  0.013764154152759443,
+  0.20342984527633587,
+  -0.06396958673701064
+ ],
+ "reprojection_error_px": 0.24004978889527553,
+ "holdout_reprojection_error_px": 0.24198514015137568,
+ "frames_used": 200,
+ "frames_held_out": 50,
+ "coverage": 1.0,
+ "valid_to_corners": true,
+ "lambda_equivalent": 0.011826906037703718,
+ "square_mm": 20.0,
+ "clips": [
+  "CAL_std_1920x1080_25_rocksteady_A.MP4"
+ ],
+ "checks_passed": true
+}
